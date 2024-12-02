@@ -12,37 +12,10 @@ spring:
           filters:
             - RewritePath=/service/(?<segment>.*), /$\{segment}
             - AddRequestHeader=X-Request-Source, Gateway
-                    
         - id: sales-service
-          uri: http://localhost:8082
+          uri: http://localhost:8090
           predicates:
-            - Path=/api/**
-          filters:
-            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - Path=/api/test/**
+
 
       
-      # 글로벌 CORS 설정
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: 
-              - "http://localhost:3000"
-              - "https://example.com"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-
-      # 디스커버리 설정 (유레카 사용 시)
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-
-# 액추에이터 엔드포인트 노출
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,gateway
