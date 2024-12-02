@@ -12,10 +12,44 @@ spring:
           filters:
             - RewritePath=/service/(?<segment>.*), /$\{segment}
             - AddRequestHeader=X-Request-Source, Gateway
+        - id: static-resources
+          uri: http://localhost:3000  # 프론트엔드 서버 주소
+          predicates:
+            - Path=/node_modules/**, /src/**, /@*/**
         - id: sales-service
           uri: http://localhost:8090
           predicates:
-            - Path=/api/test/**
+            - Path=/api/**
 
+      # 글로벌 CORS 설정
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: 
+              - "http://localhost:3000"
+              - "https://example.com"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - HEAD
 
-      
+      # 디스커버리 설정 (유레카 사용 시)
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+  web:
+    resources:
+      add-mappings: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+# 액추에이터 엔드포인트 노출
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
