@@ -4,6 +4,9 @@ server:
 spring:
   cloud:
     gateway:
+      default-filters:
+        - GlobalFilter
+        
       routes:
         - id: auth-service
           uri: http://localhost:3000
@@ -12,11 +15,16 @@ spring:
           filters:
             - RewritePath=/service/(?<segment>.*), /$\{segment}
             - AddRequestHeader=X-Request-Source, Gateway
+        
         - id: static-resources
           uri: http://localhost:3000  # 프론트엔드 서버 주소
           predicates:
             - Path=/node_modules/**, /src/**, /@*/**
+        
         - id: sales-service
           uri: http://localhost:8090
           predicates:
             - Path=/api/**
+          filters:
+            - SalesServiceFilter
+            
