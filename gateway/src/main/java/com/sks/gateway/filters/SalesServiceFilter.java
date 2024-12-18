@@ -33,7 +33,7 @@ public class SalesServiceFilter extends AbstractGatewayFilterFactory<SalesServic
 	public GatewayFilter apply(Config config) {
 		config.setEnabled(true);
 		// 람다 표현식을 사용하지 않고 구현
-		stopWatch.start();
+//		stopWatch.start();
 		return new GatewayFilter() {
 			@Override
 			public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -49,21 +49,21 @@ public class SalesServiceFilter extends AbstractGatewayFilterFactory<SalesServic
 				
 				
 //				if (config.isEnabled() && exchange.getRequest().getHeaders().containsKey("X-Block")) {
-					exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+//					exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
 					logger.info("[세일즈서비스필터] Response 응답 >>>>> IP : {}, URI : {}, 응답코드 : {}, 처리시간 : {} ",
 							request.getRemoteAddress().getAddress(), 
 							request.getURI(),
-							response.getStatusCode(),
-							stopWatch.getTotalTime(TimeUnit.MILLISECONDS)
+							response.getStatusCode()
+//							stopWatch.getTotalTime(TimeUnit.MILLISECONDS)
 							);
 					for (Entry<String, List<String>> header : response.getHeaders().entrySet()) {
 					    logger.info("	[세일즈서비스필터]{} : {}:{}", this.getClass().getName(), header.getKey(), header.getValue());
 					}
 //					return exchange.getResponse().setComplete();
 //				}
-				stopWatch.stop();
+//				stopWatch.stop();
 				// 다음 필터로 요청 전달
-				return chain.filter(exchange);
+ 				return chain.filter(exchange);
 			}
 		};
 	}

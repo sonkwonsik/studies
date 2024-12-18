@@ -4,7 +4,9 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ReactiveHttpInputMessage;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -24,7 +26,7 @@ public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Conf
 	
 	public GlobalFilter() {
 		super(Config.class);
-		stopWatch = new StopWatch("Gateway");
+//		stopWatch = new StopWatch("Gateway");
 	}
 
 	@Override
@@ -35,20 +37,31 @@ public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Conf
 			public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 				ServerHttpRequest request = exchange.getRequest();
 				ServerHttpResponse response = exchange.getResponse();
+		        if (request.getMethod() == HttpMethod.OPTIONS) {
+		        	response.setStatusCode(HttpStatus.OK);
+		            return response.setComplete();
+		        } else {
+		        	
+		        	
+		        }
 //				stopWatch.start();
-				logger.info("[글로벌필터] Request요청>>>>> IP : {}, URI : {}",request.getRemoteAddress().getAddress(), request.getURI());
 				
-				if (config.isEnabled() && exchange.getRequest().getHeaders().containsKey("X-Block")) {
-					exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-					stopWatch.stop();
-					logger.info("[글로벌필터] Response 응답 >>>>> IP : {}, URI : {}, 응답코드 : {}, 처리시간 : {} ",
-							request.getRemoteAddress().getAddress(), 
-							request.getURI(),
-							response.getStatusCode(),
-							stopWatch.getTotalTime(TimeUnit.MILLISECONDS)
-							);
-					return exchange.getResponse().setComplete();
-				}
+//				logger.info("Request Headers: " + exchange.getRequest().getHeaders());
+//				
+//				logger.info("[글로벌필터] Request요청>>>>> IP : {}, URI : {}",request.getRemoteAddress().getAddress(), request.getURI());
+//				
+////				if (config.isEnabled() && exchange.getRequest().getHeaders().containsKey("X-Block")) {
+////					exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+////					stopWatch.stop();
+//					logger.info("[글로벌필터] Response 응답 >>>>> IP : {}, URI : {}, 응답코드 : {}, 처리시간 : {} ",
+//							request.getRemoteAddress().getAddress(), 
+//							request.getURI(),
+//							response.getStatusCode(),
+//							1
+////							stopWatch.getTotalTime(TimeUnit.MILLISECONDS)
+//							);
+////					return exchange.getResponse().setComplete();
+////				}
 				// 다음 필터로 요청 전달
 				return chain.filter(exchange);
 			}
